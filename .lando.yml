@@ -1,0 +1,16 @@
+name: heartwell-kessler
+recipe: wordpress
+proxy:
+  appserver:
+    - maison-form.lndo.site
+config:
+  php: '8.5'
+  via: apache
+  webroot: web
+  database: mysql:8.0
+  xdebug: false
+
+tooling:
+  wp:
+    service: appserver
+    cmd: wp --path=/app/web/wp

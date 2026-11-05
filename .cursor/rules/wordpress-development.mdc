@@ -1,0 +1,72 @@
+---
+description: WordPress, Bedrock, Sage, Blade, Tailwind, ACF PRO, Vite, and Lando standards for this project
+alwaysApply: true
+---
+
+# WordPress development
+
+Stack: WordPress, Roots Bedrock, Roots Sage, Blade, Tailwind CSS, ACF PRO, Vite, Lando. Theme: `web/app/themes/agency-starter`. Local site: `https://maison-form.lndo.site`. Admin: `/wp/wp-admin/`. Use `lando wp` from the project root. Do not print `.env`, `auth.json`, salts, or passwords.
+
+## Architecture
+
+Follow the installed Sage layout. Read an existing neighbor before adding a file.
+
+- Shell: `resources/views/layouts/app.blade.php`. Header and footer: `resources/views/sections/header.blade.php` and `footer.blade.php`. Every public template uses that shell.
+- Sections: `resources/views/components/sections/`. Shared chrome: `resources/views/components/`. Page assembly: `resources/views/partials/page-sections.blade.php`.
+- Field registration: `app/fields/`. Rendering and escaping: `app/Acf/Content.php`. Variation class strings: `app/Design.php`.
+- Keep markup in Blade components. Keep queries, field reads, escaping, and class lookup in PHP. Do not copy a section's markup into a second template.
+- Use WordPress for posts, pages, the Journal posts page, `project` and `service` content, taxonomies, nav menus, and featured images. The content types live in `web/app/mu-plugins/heartwell-content.php`.
+
+## Content
+
+Client-facing headings, body copy, buttons, links, image references, and contact details come from WordPress core fields or ACF. Do not hardcode them in Blade or PHP.
+
+- Modular page sections use the `page_sections` flexible content field.
+- Repeatable rows use ACF repeaters. Galleries use ACF gallery fields.
+- Sitewide header, footer, contact, and design choices live in one settings surface: `app/fields/site-settings.php`. That is the private Site Settings page today. When ACF PRO options pages are available, register one options page and move those fields there. Do not create a second settings store.
+- ACF PRO is the required editor for flexible content, repeaters, galleries, and options pages. Do not download PRO, invent a license key, or put a key in the repo. If `acf_is_pro()` is false, keep the field definitions and stored meta, and say that the licensed editor is required. Do not replace missing PRO controls with hardcoded content.
+
+## Styling
+
+Tailwind CSS is the only CSS framework. Do not add Bootstrap, Bulma, or another utility or component framework.
+
+- Tokens live in `resources/css/theme.css`. Reuse them. Add a token there before inventing a one-off color, size, or font.
+- Write mobile-first utilities (`py-6 md:py-10`). Keep type on the existing heading and body scale.
+- ACF variation choices must resolve through `App\Design::classes($group, $choice)`, which returns an allowlisted class string. Add the whole string to `Design::maps()`. Never concatenate a field value into a class name.
+
+```php
+// Correct
+Design::classes('button', $choice);
+
+// Wrong: builds an unreviewed class from stored content
+'bg-' . $choice . '-500';
+```
+
+- Prefer Tailwind utilities. Add custom CSS only when utilities cannot express it, in `resources/css/theme.css`.
+- One Vite config: `web/app/themes/agency-starter/vite.config.js`. One Tailwind entry: `resources/css/app.css`. Do not add a second Tailwind or Vite config. `app.css` and `editor.css` share one compiled stylesheet.
+
+## Templates
+
+Keep these pages on the shared header, navigation, footer, and tokens: Home (`front-page.blade.php`), Work, Studio, Services, Journal (`home.blade.php`, the posts page), and Contact. Keep `single-project.blade.php` and `single.blade.php` for one project and one journal article. Search and `404.blade.php` use the same shell.
+
+## Implementation
+
+Match WordPress and PHP coding standards. Escape on output (`esc_html`, `esc_attr`, `esc_url`, `wp_kses` for limited HTML). Sanitize and validate input. Use nonces and capability checks for state changes.
+
+Keep one `h1`, a logical heading order, visible focus, labels on controls, meaningful image alt text, and a keyboard-operable mobile dialog. Honor `prefers-reduced-motion`.
+
+Serve attachment images with registered sizes and `srcset`. Lazy-load below-the-fold images. The LCP hero or featured image is `loading="eager"` with `fetchpriority="high"`. Do not enqueue the same CSS or JavaScript twice.
+
+Preserve working behavior. Edit only files the task requires. Add a dependency only when the stack cannot do the job. Record a structural change in `README.md` or the matching doc in `docs/`.
+
+For a new feature:
+
+1. Read the existing component, field group, and template.
+2. List the copy, media, and links an editor must change.
+3. Reuse or add ACF fields. Flexible content for sections, repeaters for repeated rows.
+4. Render them in Sage Blade, reusing a component.
+5. Style with Tailwind and `Design::classes()`.
+6. Check 375, 768, 1024, 1440, and 1920. No unintended horizontal scroll.
+7. Edit the field in wp-admin and confirm the front end updates.
+8. Run `npm run build --prefix web/app/themes/agency-starter` after CSS or JS changes. Confirm `public/build/manifest.json`. Leave `public/hot` only while the Vite dev server is running.
+9. State what changed and where to edit it in WordPress.
