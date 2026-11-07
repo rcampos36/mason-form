@@ -12,6 +12,6 @@
   ])));
 @endphp
 
-<section {{ $attributes->merge(['class' => $classes]) }}>
+<section data-reveal="line" {{ $attributes->merge(['class' => 'site-section '.$classes]) }}>
   {{ $slot }}
 </section>

@@ -14,10 +14,17 @@
 @endphp
 
 @if ($heading !== '' || $html !== '' || $email !== '' || $phone !== '' || $address !== '' || $social || $form !== '' || $map !== '')
-  <x-section layout="contained" :tone="$section['section_background'] ?? null" :align="$align">
+  <x-section layout="wide" :tone="$section['section_background'] ?? null" :align="$align">
     <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
       <div class="grid content-start gap-8">
-        <x-section-intro :heading="$heading" :html="$html" :align="$align" />
+        <x-section-intro
+          :heading="$heading"
+          :html="$html"
+          :align="$align"
+          :level="(int) ($sectionIndex ?? 0) === 0 ? 1 : 2"
+          :size="(int) ($sectionIndex ?? 0) === 0 ? 'display' : '1'"
+          :number="$sectionNumber ?? ''"
+        />
 
         @if ($email !== '' || $phone !== '' || $address !== '')
           <div class="grid gap-3 text-body">
@@ -37,7 +44,7 @@
           <ul class="flex flex-wrap gap-x-6 gap-y-2">
             @foreach ($social as $link)
               <li>
-                <a class="{{ \App\Design::classes('link', 'nav') }}" href="{{ $link['url'] }}">{{ $link['label'] }}</a>
+                <a class="{{ \App\Design::classes('link', 'filter') }}" href="{{ $link['url'] }}">{{ $link['label'] }}</a>
               </li>
             @endforeach
           </ul>

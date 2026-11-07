@@ -13,6 +13,9 @@ require_once __DIR__.'/fields/Builder.php';
 require_once __DIR__.'/fields/page.php';
 require_once __DIR__.'/fields/site-settings.php';
 require_once __DIR__.'/fields/entries.php';
+require_once __DIR__.'/fields/SectionEditor.php';
+
+\App\Fields\SectionEditor::register();
 
 add_action('acf/init', function () {
     if (! function_exists('acf_get_field_type') || acf_get_field_type('flexible_content')) {
@@ -45,17 +48,21 @@ add_action('admin_notices', function () {
 
     $screen = get_current_screen();
 
-    if (! current_user_can('manage_options') || ! $screen || $screen->base !== 'post' || $screen->post_type !== 'page') {
-        return;
-    }
-
     $postId = isset($_GET['post']) ? (int) $_GET['post'] : 0;
 
-    if ($postId > 0 && get_page_template_slug($postId) === 'template-site-settings.blade.php') {
+    if (! $screen || $screen->base !== 'post' || ! in_array($screen->post_type, ['page', 'project'], true)) {
         return;
     }
 
-    echo '<div class="notice notice-info"><p>'.esc_html__('Page sections use ACF PRO Flexible Content. Install the licensed plugin to add, duplicate, remove, and reorder them in this editor.', 'sage').'</p></div>';
+    if ($postId < 1 || ! current_user_can('edit_post', $postId)) {
+        return;
+    }
+
+    if ($screen->post_type === 'page' && get_page_template_slug($postId) === 'template-site-settings.blade.php') {
+        return;
+    }
+
+    echo '<div class="notice notice-info"><p>'.esc_html__('Page content edits the text, images, and buttons already on this page. Adding, removing, or reordering sections needs the licensed ACF PRO editor.', 'sage').'</p></div>';
 });
 
 add_filter('acf/settings/save_json', function () {

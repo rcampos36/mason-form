@@ -5,22 +5,30 @@
     'html' => '',
     'align' => 'left',
     'level' => 2,
+    'size' => null,
+    'number' => '',
 ])
 
-@if ($eyebrow !== '' || $heading !== '' || $text !== '' || $html !== '')
-  <div class="{{ \App\Design::classes('stack', is_string($align) ? $align : null) }}">
+@php($level = (int) $level)
+
+@if ($number !== '' || $eyebrow !== '' || $heading !== '' || $text !== '' || $html !== '')
+  <div @class(['grid gap-6', 'mx-auto max-w-content text-center' => $align === 'center'])>
+    @if ($number !== '')
+      <p class="text-nav uppercase text-muted">{{ $number }}</p>
+    @endif
+
     @if ($eyebrow !== '')
       <p class="{{ \App\Design::classes('tag', 'default') }}">{{ $eyebrow }}</p>
     @endif
 
     @if ($heading !== '')
-      <x-heading :level="$level" :size="$level === 1 ? 'display' : null">{{ $heading }}</x-heading>
+      <x-heading :level="$level" :size="$size ?? ($level === 1 ? 'display' : null)" :data-reveal="$level === 1 ? null : 'heading'">{{ $heading }}</x-heading>
     @endif
 
     @if ($html !== '')
-      <div class="entry-content text-body text-muted">{!! $html !!}</div>
+      <div class="entry-content max-w-content {{ \App\Design::classes('type', 'lead') }} text-muted">{!! $html !!}</div>
     @elseif ($text !== '')
-      <p class="text-body text-muted">{{ $text }}</p>
+      <x-type class="max-w-content text-muted" size="lead">{{ $text }}</x-type>
     @endif
   </div>
 @endif

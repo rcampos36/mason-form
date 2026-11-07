@@ -8,7 +8,7 @@
 @if ($heading !== '' || $stats)
   <x-section layout="wide" :tone="$section['section_background'] ?? null">
     <div class="grid gap-12">
-      <x-section-intro :heading="$heading" />
+      <x-section-intro :heading="$heading" :number="$sectionNumber ?? ''" />
 
       @if ($stats)
         <dl class="{{ \App\Design::classes('layout', 'stats') }}">

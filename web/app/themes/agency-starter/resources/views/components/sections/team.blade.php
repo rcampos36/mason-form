@@ -7,7 +7,7 @@
 @if ($heading !== '' || $people)
   <x-section layout="wide" :tone="$section['section_background'] ?? null" :align="$align">
     <div class="grid gap-12">
-      <x-section-intro :heading="$heading" :align="$align" />
+      <x-section-intro :heading="$heading" :align="$align" :number="$sectionNumber ?? ''" />
 
       @if ($people)
         <ul class="{{ \App\Design::classes('columns', '3') }} list-none">
@@ -16,7 +16,7 @@
               <article class="grid gap-6">
                 @php($photo = \App\Acf\Content::image($person['image'], 'large', 'portrait', '(min-width: 1024px) 30vw, 100vw'))
                 @if ($photo !== '')
-                  <x-image>{!! $photo !!}</x-image>
+                  <x-image ratio="portrait">{!! $photo !!}</x-image>
                 @endif
 
                 @if ($person['name'] !== '')

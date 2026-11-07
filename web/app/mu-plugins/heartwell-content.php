@@ -68,4 +68,4 @@ add_action('init', function () {
         'rewrite' => ['slug' => 'team'],
         'supports' => ['title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'page-attributes'],
     ]);
-});
+}, 4);

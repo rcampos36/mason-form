@@ -7,9 +7,9 @@
 @endphp
 
 @if ($heading !== '' || $text !== '' || $steps)
-  <x-section layout="contained" :tone="$section['section_background'] ?? null">
+  <x-section layout="wide" :tone="$section['section_background'] ?? null">
     <div class="grid gap-12">
-      <x-section-intro :heading="$heading" :text="$text" />
+      <x-section-intro :heading="$heading" :text="$text" :number="$sectionNumber ?? ''" />
 
       @if ($steps)
         <ol class="{{ \App\Design::classes('layout', 'steps') }}">

@@ -26,7 +26,14 @@ class Sections
      */
     public static function group(): array
     {
-        $field = Builder::available(self::flexibleField());
+        $licensed = function_exists('acf_get_field_type') && acf_get_field_type('flexible_content');
+        $field = $licensed
+            ? self::flexibleField()
+            : Builder::message(
+                'field_hk_page_sections_notice',
+                __('Page sections', 'sage'),
+                __('Text, images, and buttons already on this page are edited in Page content. Adding, removing, or reordering sections needs the licensed ACF PRO editor.', 'sage')
+            );
 
         return [
             'key' => 'group_hk_page',
@@ -53,7 +60,7 @@ class Sections
                     ],
                 ],
             ],
-            'menu_order' => 0,
+            'menu_order' => $licensed ? 0 : 20,
             'position' => 'normal',
             'style' => 'default',
             'label_placement' => 'top',
@@ -206,9 +213,10 @@ class Sections
         $layouts = [
             self::layout('layout_hk_hero', 'hero', __('Hero', 'sage'), [
                 Builder::text('field_hk_hero_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('Short line above the heading.', 'sage')),
-                Builder::text('field_hk_hero_heading', __('Heading', 'sage'), 'heading', __('Leave blank to use the page title.', 'sage')),
-                Builder::textarea('field_hk_hero_text', __('Description', 'sage'), 'text', __('Plain text under the heading.', 'sage'), 3),
-                Builder::image('field_hk_hero_image', __('Background image', 'sage'), 'image', __('Wide image behind the text. Recommended 2400×1600 pixels, JPG or WebP. Captions are not shown here.', 'sage')),
+                Builder::text('field_hk_hero_heading', __('Heading', 'sage'), 'heading', __('On other pages, leave blank to use the page title. The large homepage title is the company name in Site Settings.', 'sage')),
+                Builder::textarea('field_hk_hero_text', __('Description', 'sage'), 'text', __('Plain text under the heading. On the homepage this is the paragraph under the photograph.', 'sage'), 3),
+                Builder::image('field_hk_hero_image', __('Image', 'sage'), 'image', __('On the homepage this photograph sits in the right-hand frame. On other pages it fills the hero. Recommended 2000×2500 pixels, JPG or WebP.', 'sage')),
+                Builder::text('field_hk_hero_caption', __('Photograph caption', 'sage'), 'image_caption', __('Optional line under the homepage photograph. Leave blank to use the caption saved on the image in the Media Library.', 'sage')),
                 Builder::file('field_hk_hero_video', __('Background video', 'sage'), 'video', __('Optional. MP4 or WebM, muted behind the text. The image remains for visitors who prefer reduced motion.', 'sage')),
                 Builder::link('field_hk_hero_primary', __('Primary button', 'sage'), 'primary_link', __('Optional. The link title is the button label.', 'sage')),
                 Builder::link('field_hk_hero_secondary', __('Secondary button', 'sage'), 'secondary_link', __('Optional second button.', 'sage')),
@@ -222,9 +230,18 @@ class Sections
                 ], 'standard', __('Approved height.', 'sage')),
             ]),
             self::layout('layout_hk_introduction', 'introduction', __('Introduction', 'sage'), [
+                Builder::text('field_hk_intro_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('Small label above the heading. On the homepage this is the studio label.', 'sage')),
                 Builder::text('field_hk_intro_heading', __('Heading', 'sage'), 'heading'),
-                Builder::wysiwyg('field_hk_intro_text', __('Text', 'sage'), 'text', __('Basic formatting is kept. Embedded media is not available in this field.', 'sage')),
-                Builder::image('field_hk_intro_image', __('Image', 'sage'), 'image', __('Optional. Recommended 1600×1000 pixels, JPG or WebP.', 'sage')),
+                Builder::wysiwyg('field_hk_intro_text', __('Text', 'sage'), 'text', __('Basic formatting is kept. Embedded media is not available in this field. On the homepage this is the paragraph beside the heading.', 'sage')),
+                Builder::link('field_hk_intro_link', __('Link', 'sage'), 'link', __('On the homepage this is the underlined link at the top right. The link title is the label.', 'sage')),
+                Builder::textarea('field_hk_intro_statement', __('Statement', 'sage'), 'statement', __('On the homepage this is the large sentence beside the figures.', 'sage'), 3),
+                Builder::textarea('field_hk_intro_statement_rest', __('Statement continuation', 'sage'), 'statement_rest', __('Continues the statement in a lighter color.', 'sage'), 3),
+                Builder::textarea('field_hk_intro_tags', __('Disciplines', 'sage'), 'tags', __('One word per line. On the homepage these scroll from right to left along the bottom of the studio section.', 'sage'), 6),
+                Builder::repeater('field_hk_intro_stats', __('Figures', 'sage'), 'figures', [
+                    Builder::text('field_hk_intro_stat_label', __('Label', 'sage'), 'label'),
+                    Builder::text('field_hk_intro_stat_number', __('Figure', 'sage'), 'number', __('Shown as entered, for example 48 or 12+.', 'sage')),
+                ], __('On the homepage these fill the cells under the heading, two per row, in the order entered.', 'sage'), 'field_hk_intro_stat_label', 8),
+                Builder::image('field_hk_intro_image', __('Image', 'sage'), 'image', __('Optional. Recommended 1600×1000 pixels, JPG or WebP. The homepage studio section does not show this image.', 'sage')),
                 Builder::select('field_hk_intro_layout', __('Layout', 'sage'), 'layout', [
                     'stacked' => __('Stacked', 'sage'),
                     'image-left' => __('Image left', 'sage'),
@@ -258,8 +275,9 @@ class Sections
                 self::align('field_hk_features_align'),
             ]),
             self::layout('layout_hk_portfolio', 'portfolio', __('Portfolio grid', 'sage'), [
-                Builder::text('field_hk_portfolio_heading', __('Heading', 'sage'), 'heading'),
-                Builder::textarea('field_hk_portfolio_text', __('Description', 'sage'), 'text', '', 3),
+                Builder::text('field_hk_portfolio_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('On the homepage this is the small label at the left of the work intro.', 'sage')),
+                Builder::text('field_hk_portfolio_heading', __('Heading', 'sage'), 'heading', __('On the homepage this is the large sentence beside the section number.', 'sage')),
+                Builder::textarea('field_hk_portfolio_text', __('Description', 'sage'), 'text', __('Shown under the heading on pages other than the homepage.', 'sage'), 3),
                 Builder::select('field_hk_portfolio_source', __('Projects', 'sage'), 'source', [
                     'selected' => __('Selected projects', 'sage'),
                     'latest' => __('Latest projects', 'sage'),
@@ -272,13 +290,14 @@ class Sections
                     'grid' => __('Grid', 'sage'),
                     'list' => __('List', 'sage'),
                 ], 'grid', __('Approved layout.', 'sage')),
-                Builder::link('field_hk_portfolio_view_all', __('View-all button', 'sage'), 'view_all', __('Optional.', 'sage')),
+                Builder::link('field_hk_portfolio_view_all', __('View-all button', 'sage'), 'view_all', __('On the homepage this is the underlined link under the large sentence. The link title is the label.', 'sage')),
                 self::background('field_hk_portfolio_background'),
                 self::align('field_hk_portfolio_align'),
             ]),
             self::layout('layout_hk_services', 'services', __('Services grid', 'sage'), [
-                Builder::text('field_hk_services_heading', __('Heading', 'sage'), 'heading'),
-                Builder::textarea('field_hk_services_text', __('Description', 'sage'), 'text', '', 3),
+                Builder::text('field_hk_services_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('On the homepage this is the small label at the left of the intro.', 'sage')),
+                Builder::text('field_hk_services_heading', __('Heading', 'sage'), 'heading', __('On the homepage this is the large sentence beside the section number.', 'sage')),
+                Builder::textarea('field_hk_services_text', __('Description', 'sage'), 'text', __('On the homepage this is the paragraph under the large sentence.', 'sage'), 3),
                 Builder::select('field_hk_services_source', __('Services', 'sage'), 'source', [
                     'items' => __('Custom items', 'sage'),
                     'records' => __('Service records', 'sage'),
@@ -295,8 +314,15 @@ class Sections
                 self::align('field_hk_services_align'),
             ]),
             self::layout('layout_hk_testimonials', 'testimonials', __('Testimonials', 'sage'), [
-                Builder::text('field_hk_testimonials_heading', __('Heading', 'sage'), 'heading'),
+                Builder::select('field_hk_testimonials_style', __('Layout', 'sage'), 'style', [
+                    'grid' => __('Grid', 'sage'),
+                    'rail' => __('Scrolling cards', 'sage'),
+                ], 'grid', __('Scrolling cards hold the page and move the quotes to the left until they sit together.', 'sage')),
+                Builder::text('field_hk_testimonials_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('On the scrolling layout this is the small label at the left.', 'sage')),
+                Builder::text('field_hk_testimonials_heading', __('Heading', 'sage'), 'heading', __('On the scrolling layout this is the large sentence beside the section number.', 'sage')),
+                Builder::textarea('field_hk_testimonials_text', __('Description', 'sage'), 'text', __('On the scrolling layout this is the paragraph under the large sentence.', 'sage'), 3),
                 Builder::repeater('field_hk_testimonials_rows', __('Testimonials', 'sage'), 'testimonials', [
+                    Builder::text('field_hk_testimonial_project', __('Project', 'sage'), 'project', __('Optional label above the quote, for example Stone House, 2025.', 'sage')),
                     Builder::textarea('field_hk_testimonial_quote', __('Quote', 'sage'), 'quote', '', 4),
                     Builder::text('field_hk_testimonial_name', __('Name', 'sage'), 'name'),
                     Builder::text('field_hk_testimonial_role', __('Job title', 'sage'), 'role'),
@@ -381,14 +407,17 @@ class Sections
                 self::align('field_hk_cta_align'),
             ]),
             self::layout('layout_hk_journal', 'journal', __('Latest journal posts', 'sage'), [
+                Builder::text('field_hk_journal_eyebrow', __('Eyebrow', 'sage'), 'eyebrow'),
                 Builder::text('field_hk_journal_heading', __('Heading', 'sage'), 'heading'),
                 Builder::textarea('field_hk_journal_text', __('Description', 'sage'), 'text', '', 3),
-                Builder::number('field_hk_journal_count', __('Number of posts', 'sage'), 'count', 3, __('Published posts only.', 'sage'), 1, 12),
+                Builder::relationship('field_hk_journal_posts', __('Articles', 'sage'), 'posts', ['post'], __('Optional. The scrolling stack uses these articles in this order. Leave empty to show the latest posts.', 'sage')),
+                Builder::number('field_hk_journal_count', __('Number of posts', 'sage'), 'count', 3, __('Used when no articles are chosen above.', 'sage'), 1, 12),
                 Builder::taxonomy('field_hk_journal_category', __('Category', 'sage'), 'category', 'category', __('Leave empty to show every category.', 'sage')),
                 Builder::select('field_hk_journal_layout', __('Layout', 'sage'), 'layout', [
                     'grid' => __('Grid', 'sage'),
                     'list' => __('List', 'sage'),
-                ], 'grid', __('Approved layout.', 'sage')),
+                    'stack' => __('Scrolling stack', 'sage'),
+                ], 'grid', __('The scrolling stack holds the page while each article slides up over the one before it.', 'sage')),
                 self::background('field_hk_journal_background'),
                 self::align('field_hk_journal_align'),
             ]),

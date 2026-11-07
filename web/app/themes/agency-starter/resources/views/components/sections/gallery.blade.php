@@ -7,7 +7,7 @@
 @if ($heading !== '' || $ids)
   <x-section layout="wide" :tone="$section['section_background'] ?? null">
     <div class="grid gap-12">
-      <x-section-intro :heading="$heading" />
+      <x-section-intro :heading="$heading" :number="$sectionNumber ?? ''" />
 
       @if ($ids)
         <ul class="{{ \App\Acf\Content::variant($section['columns'] ?? null, 'gallery') }} list-none">

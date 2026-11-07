@@ -2,9 +2,10 @@
     'src' => null,
     'alt' => '',
     'caption' => null,
+    'ratio' => 'media',
 ])
 
-<figure {{ $attributes->merge(['class' => \App\Design::classes('image', 'frame')]) }}>
+<figure data-reveal="image" {{ $attributes->merge(['class' => 'group '.\App\Design::classes('image', 'frame')]) }}>
   @if ($src)
     <img
       src="{{ $src }}"
@@ -12,7 +13,7 @@
       class="{{ \App\Design::classes('image', 'media') }}"
     >
   @else
-    <div class="{{ \App\Design::classes('image', 'media') }} [&_img]:h-full [&_img]:w-full [&_img]:object-cover">
+    <div class="{{ \App\Design::classes('image', is_string($ratio) ? $ratio : 'media') }} [&_img]:h-full [&_img]:w-full [&_img]:object-cover">
       {{ $slot }}
     </div>
   @endif

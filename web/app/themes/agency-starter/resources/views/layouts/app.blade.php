@@ -1,5 +1,5 @@
 <!doctype html>
-<html @php(language_attributes()) @if ($accent = \App\Acf\Content::accent()) style="--color-accent: {{ $accent }}" @endif>
+<html @php(language_attributes()) @class(['motion-ready' => \App\Acf\Content::motionEnabled()]) @if ($accent = \App\Acf\Content::accent()) style="--color-accent: {{ $accent }}" @endif>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
 
-  <body @php(body_class(\App\Acf\Content::choice('default_background', 'tone').' font-sans text-body antialiased'))>
+  <body @php(body_class(\App\Acf\Content::choice('default_background', 'tone').' font-sans text-body antialiased '.(\App\Acf\Content::headerOverlaysContent() ? 'has-header-overlay' : (\App\Acf\Content::enabled('sticky_header') ? 'has-fixed-header' : ''))))>
     @php(wp_body_open())
 
     <div id="app" class="flex min-h-screen flex-col">

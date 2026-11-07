@@ -75,7 +75,7 @@ class Builder
     public static function color(string $key, string $label, string $name, string $instructions = ''): array
     {
         return self::base($key, $label, $name, 'color_picker', $instructions, [
-            'default_value' => '#E4D5C3',
+            'default_value' => '#4E69C9',
             'enable_opacity' => 0,
             'return_format' => 'string',
         ]);

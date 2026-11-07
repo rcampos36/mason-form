@@ -87,6 +87,27 @@ class Content
         return ! in_array($value, [null, false, 0, '0', ''], true);
     }
 
+    public static function motionEnabled(): bool
+    {
+        if (! function_exists('get_field')) {
+            return true;
+        }
+
+        $source = self::settingsId();
+
+        if ($source < 1) {
+            return true;
+        }
+
+        $value = get_field('motion_enabled', $source);
+
+        if ($value === null || $value === '') {
+            return true;
+        }
+
+        return ! in_array($value, [false, 0, '0'], true);
+    }
+
     public static function text(string $name, mixed $source = null, string $default = ''): string
     {
         if (is_array($source)) {
@@ -109,6 +130,40 @@ class Content
         return $name !== '' ? $name : (string) get_bloginfo('name', 'display');
     }
 
+    /**
+     * @return array{lead: string, mark: string, rest: string, follow: string}
+     */
+    public static function nameParts(): array
+    {
+        $name = html_entity_decode(self::companyName(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $name = trim(preg_replace('/\s+/u', ' ', $name) ?? $name);
+
+        if (preg_match('/^(.+?)\s+&\s+(.+)$/u', $name, $matches) === 1) {
+            return [
+                'lead' => $matches[1],
+                'mark' => '&',
+                'rest' => $matches[2],
+                'follow' => '& '.$matches[2],
+            ];
+        }
+
+        return [
+            'lead' => $name,
+            'mark' => '',
+            'rest' => '',
+            'follow' => '',
+        ];
+    }
+
+    public static function nameMark(): string
+    {
+        $parts = self::nameParts();
+        $lead = mb_substr($parts['lead'], 0, 1);
+        $second = mb_substr(ltrim($parts['follow'], "& \t"), 0, 1);
+
+        return $second !== '' ? $lead.'&'.$second : $lead;
+    }
+
     public static function copyright(): string
     {
         $custom = self::text('copyright_text');
@@ -122,21 +177,31 @@ class Content
 
     public static function contact(string $field): string
     {
-        foreach (['footer_contact', 'contact'] as $group) {
-            $values = self::raw($group);
+        return self::groupText('contact', $field);
+    }
 
-            if (! is_array($values)) {
-                continue;
-            }
+    public static function footerContact(string $field): string
+    {
+        $value = self::raw('footer_contact_'.$field);
 
-            $value = trim((string) ($values[$field] ?? ''));
-
-            if ($value !== '') {
-                return $value;
-            }
+        if (is_string($value) && trim($value) !== '') {
+            return trim($value);
         }
 
-        return '';
+        $grouped = self::groupText('footer_contact', $field);
+
+        return $grouped !== '' ? $grouped : self::contact($field);
+    }
+
+    private static function groupText(string $group, string $field): string
+    {
+        $values = self::raw($group);
+
+        if (! is_array($values)) {
+            return '';
+        }
+
+        return trim((string) ($values[$field] ?? ''));
     }
 
     public static function description(string $preferred, string $fallback): string
@@ -259,6 +324,31 @@ class Content
     public static function startsWithHero(array $sections): bool
     {
         return ($sections[0]['acf_fc_layout'] ?? '') === 'hero';
+    }
+
+    public static function headerOverlaysContent(): bool
+    {
+        $postId = 0;
+
+        if (is_singular()) {
+            $postId = (int) get_queried_object_id();
+        } elseif (is_home()) {
+            $postId = (int) get_option('page_for_posts');
+        }
+
+        if ($postId < 1 || is_front_page()) {
+            return false;
+        }
+
+        $sections = self::sections($postId);
+
+        if (! self::startsWithHero($sections)) {
+            return false;
+        }
+
+        $hero = $sections[0];
+
+        return self::imageUrl($hero['image'] ?? null) !== '' || self::fileUrl($hero['video'] ?? null) !== '';
     }
 
     public static function variant(mixed $value, string $group): string
@@ -477,9 +567,67 @@ class Content
         ]);
     }
 
+    public static function nextProject(int $postId): ?WP_Post
+    {
+        $next = get_adjacent_post(false, '', false);
+
+        if (! $next instanceof WP_Post || $next->ID === $postId) {
+            $next = get_adjacent_post(false, '', true);
+        }
+
+        return $next instanceof WP_Post && $next->ID !== $postId ? $next : null;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function floorPlans(int $postId): array
+    {
+        $value = function_exists('get_field') ? get_field('project_floor_plans', $postId) : null;
+        $ids = self::ids(is_array($value) ? $value : null);
+
+        if ($ids !== []) {
+            return $ids;
+        }
+
+        $stored = get_post_meta($postId, 'project_floor_plans', true);
+
+        return self::ids(is_array($stored) ? $stored : null);
+    }
+
+    public static function sectionNumber(string $layout): string
+    {
+        static $count = 0;
+
+        $numbered = [
+            'introduction',
+            'image_text',
+            'portfolio',
+            'services',
+            'feature_grid',
+            'process',
+            'statistics',
+            'team',
+            'testimonials',
+            'journal',
+            'faq',
+            'logos',
+            'gallery',
+            'contact',
+        ];
+
+        if (! in_array($layout, $numbered, true)) {
+            return '';
+        }
+
+        $count++;
+
+        return str_pad((string) $count, 2, '0', STR_PAD_LEFT);
+    }
+
     /**
      * @param  array<string, mixed>  $section
-     * @return list<array{title: string, text: string, image: int, url: string, target: string}>
+     * @return list<array{title: string, text: string, detail: string, deliverables: string, duration: string, team: string, image: int, url: string, target: string}>
      */
     public static function serviceCards(array $section): array
     {
@@ -491,6 +639,10 @@ class Content
                 $cards[] = [
                     'title' => self::text('heading', $item),
                     'text' => self::text('text', $item),
+                    'detail' => '',
+                    'deliverables' => '',
+                    'duration' => '',
+                    'team' => '',
                     'image' => self::attachmentId($item['image'] ?? null),
                     'url' => $link['url'] ?? '',
                     'target' => $link['target'] ?? '',
@@ -519,7 +671,11 @@ class Content
 
             return [
                 'title' => $post->post_title,
-                'text' => trim(get_the_excerpt($post)),
+                'text' => trim($post->post_excerpt),
+                'detail' => trim($post->post_content),
+                'deliverables' => self::text('service_deliverables', $post->ID),
+                'duration' => self::text('service_duration', $post->ID),
+                'team' => self::text('service_team', $post->ID),
                 'image' => (int) get_post_thumbnail_id($post),
                 'url' => get_permalink($linked ?: $post) ?: '',
                 'target' => '',
@@ -593,6 +749,12 @@ class Content
      */
     public static function journal(array $section): array
     {
+        $selected = self::posts($section['posts'] ?? null);
+
+        if ($selected !== []) {
+            return $selected;
+        }
+
         $args = [
             'post_type' => 'post',
             'post_status' => 'publish',

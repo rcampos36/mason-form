@@ -1,7 +1,7 @@
 <article @php(post_class())>
-  <x-section layout="contained">
+  <x-section layout="wide">
     <header class="grid gap-4">
-      <x-heading level="1">{!! $title !!}</x-heading>
+      <x-heading level="1" size="display">{!! $title !!}</x-heading>
 
       @include('partials.entry-meta')
 
@@ -10,7 +10,7 @@
         <ul class="flex flex-wrap gap-x-4 gap-y-2">
           @foreach ($categories as $category)
             <li>
-              <a class="{{ \App\Design::classes('link', 'nav') }}" href="{{ get_category_link($category) }}">{{ $category->name }}</a>
+              <a class="{{ \App\Design::classes('link', 'filter') }}" href="{{ get_category_link($category) }}">{{ $category->name }}</a>
             </li>
           @endforeach
         </ul>
@@ -19,7 +19,7 @@
 
     @php($image = \App\Acf\Content::featuredImage(get_the_ID(), 'content', 'eager'))
     @if ($image !== '')
-      <x-image class="mt-10">{!! $image !!}</x-image>
+      <x-image class="mt-10" ratio="landscape">{!! $image !!}</x-image>
     @endif
 
     <div class="entry-content mt-10">

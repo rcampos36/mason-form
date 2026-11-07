@@ -2,7 +2,7 @@
 
 WordPress site for MAISON & FORM, built with [Roots Bedrock](https://roots.io/bedrock/) and the **Agency Starter** theme ([Roots Sage](https://roots.io/sage/) 11, Blade, Vite, Tailwind CSS 4).
 
-The public pages are Home, Work, Studio, Services, Journal, and Contact, plus individual projects, journal posts, search, and the 404 template. Page sections are stored as Advanced Custom Fields data and rendered by Blade. The free ACF plugin is installed. Adding, removing, and reordering sections in the editor requires a licensed copy of ACF PRO.
+The public pages are Home, Work, Studio, Services, Journal, and Contact, plus individual projects, journal posts, search, and the 404 template. Page sections are stored as Advanced Custom Fields data and rendered by Blade. The free ACF plugin is installed. Existing section text, images, and buttons are edited in the Page content panel. Adding, removing, and reordering sections requires a licensed copy of ACF PRO.
 
 ## Documentation
 

@@ -6,9 +6,9 @@
 @endphp
 
 @if ($heading !== '' || $text !== '' || $links)
-  <x-section layout="contained" :tone="$section['section_background'] ?? null" :align="$align">
-    <div class="grid gap-8">
-      <x-section-intro :heading="$heading" :text="$text" :align="$align" />
+  <x-section layout="wide" :tone="$section['section_background'] ?? null" :align="$align">
+    <div class="grid gap-10 border-t border-border pt-12">
+      <x-section-intro :heading="$heading" :text="$text" :align="$align" size="display" />
       <x-actions :links="$links" :align="$align" />
     </div>
   </x-section>

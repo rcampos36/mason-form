@@ -13,7 +13,7 @@
 @if ($heading !== '' || $text !== '' || $image !== '')
   <x-section layout="split" :tone="$section['section_background'] ?? null">
     <div class="grid content-start gap-8">
-      <x-section-intro :heading="$heading" :text="$text" />
+      <x-section-intro :heading="$heading" :text="$text" :number="$sectionNumber ?? ''" />
       <x-actions :links="$button ? [$button] : []" />
     </div>
 

@@ -75,6 +75,15 @@ add_action('pre_get_posts', function ($query) {
     }
 });
 
+add_filter('nav_menu_css_class', function ($classes, $item, $args) {
+    if (($args->hk_variant ?? '') === 'desktop') {
+        $classes[] = 'flex';
+        $classes[] = 'items-stretch';
+    }
+
+    return $classes;
+}, 10, 3);
+
 add_filter('nav_menu_link_attributes', function ($atts, $item, $args) {
     $location = (string) ($args->theme_location ?? '');
     $variant = (string) ($args->hk_variant ?? '');
@@ -88,8 +97,8 @@ add_filter('nav_menu_link_attributes', function ($atts, $item, $args) {
         $location === 'primary_navigation' && $variant === 'mobile' => 'navMobile',
         $location === 'primary_navigation' && $current => 'navCurrent',
         $location === 'primary_navigation' => 'nav',
-        $location === 'footer_navigation' && $current => 'navCurrent',
-        $location === 'footer_navigation' => 'nav',
+        $location === 'footer_navigation' && $current => 'footerCurrent',
+        $location === 'footer_navigation' => 'footer',
         default => '',
     };
 

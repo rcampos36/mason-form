@@ -18,9 +18,17 @@ add_action('acf/include_fields', function () {
         'fields' => [
             Builder::message('field_hk_project_media_note', __('Featured image', 'sage'), __('Use the Featured image panel for the main picture. Recommended size: 1600×1000 pixels, JPG or WebP.', 'sage')),
             Builder::text('field_hk_project_client', __('Client', 'sage'), 'project_client'),
-            Builder::text('field_hk_project_year', __('Year', 'sage'), 'project_year'),
+            Builder::text('field_hk_project_year', __('Year', 'sage'), 'project_year', __('Shown on the homepage project row.', 'sage')),
+            Builder::text('field_hk_project_location', __('Location', 'sage'), 'project_location', __('Shown on the homepage project row, for example a city.', 'sage')),
+            Builder::text('field_hk_project_area', __('Area', 'sage'), 'project_area', __('Shown on the homepage project row, for example 260 m².', 'sage')),
+            Builder::text('field_hk_project_type', __('Type', 'sage'), 'project_type', __('Shown on the homepage project row. Leave blank to use the project category.', 'sage')),
             Builder::link('field_hk_project_url', __('Website', 'sage'), 'project_url', __('Optional link to the live project.', 'sage')),
-            Builder::available(Builder::gallery('field_hk_project_gallery', __('Gallery', 'sage'), 'project_gallery', __('Additional images, in the order they should appear. Recommended 1600×1000 pixels. The featured image stays in the WordPress panel.', 'sage'))),
+            function_exists('acf_get_field_type') && acf_get_field_type('gallery')
+                ? Builder::gallery('field_hk_project_gallery', __('Gallery', 'sage'), 'project_gallery', __('Additional images, in the order they should appear. Recommended 1600×1000 pixels. The featured image stays in the WordPress panel.', 'sage'))
+                : Builder::message('field_hk_project_gallery_notice', __('Gallery', 'sage'), __('Edit these pictures under Project images. Clear a picture to remove it, or use the empty field to add one. The featured image stays in the Featured image panel.', 'sage')),
+            function_exists('acf_get_field_type') && acf_get_field_type('gallery')
+                ? Builder::gallery('field_hk_project_floor_plans', __('Floor plans', 'sage'), 'project_floor_plans', __('Optional drawings. JPG, PNG, or WebP.', 'sage'))
+                : Builder::message('field_hk_project_floor_plans_notice', __('Floor plans', 'sage'), __('Edit these drawings under Project images.', 'sage')),
             Builder::relationship('field_hk_project_services', __('Services', 'sage'), 'project_services', ['service'], __('Drag to reorder.', 'sage')),
         ],
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 'project']]],
@@ -35,6 +43,9 @@ add_action('acf/include_fields', function () {
         'key' => 'group_hk_service',
         'title' => __('Service details', 'sage'),
         'fields' => [
+            Builder::text('field_hk_service_deliverables', __('Deliverables', 'sage'), 'service_deliverables', __('Shown in the homepage stage row.', 'sage')),
+            Builder::text('field_hk_service_duration', __('Duration', 'sage'), 'service_duration', __('Shown in the homepage stage row.', 'sage')),
+            Builder::text('field_hk_service_team', __('Team', 'sage'), 'service_team', __('Shown in the homepage stage row.', 'sage')),
             Builder::postObject('field_hk_service_page', __('Related page', 'sage'), 'service_page', ['page'], __('Optional page this service should link to.', 'sage')),
         ],
         'location' => [[['param' => 'post_type', 'operator' => '==', 'value' => 'service']]],

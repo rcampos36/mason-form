@@ -127,7 +127,7 @@ Free Advanced Custom Fields is installed with Composer:
 composer require wp-plugin/advanced-custom-fields
 ```
 
-Page sections use ACF PRO Flexible Content. The field group is in `web/app/themes/agency-starter/app/fields/Sections.php`. Install and editing steps are in `docs/sections.md`. Global details are edited at Dashboard → Site Settings. Projects, services, and team members use their own admin menus. Titles, excerpts, body content, featured images, and menus stay in the normal WordPress fields.
+Page sections use ACF PRO Flexible Content. The field group is in `web/app/themes/agency-starter/app/fields/Sections.php`. With the free plugin, existing section text, images, and buttons are edited in the Page content panel; adding, removing, and reordering sections still needs PRO. Install and editing steps are in `docs/sections.md`. Global details are edited at Dashboard → Site Settings. Projects, services, and team members use their own admin menus. Titles, excerpts, body content, featured images, and menus stay in the normal WordPress fields.
 
 ## Database
 
