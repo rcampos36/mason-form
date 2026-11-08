@@ -28,6 +28,8 @@ lando wp acorn view:clear
 npm run dev --prefix web/app/themes/agency-starter
 npm run build --prefix web/app/themes/agency-starter
 composer install
+scripts/deploy.sh
+scripts/deploy.sh content
 ```
 
 `npm run dev` writes `web/app/themes/agency-starter/public/hot`. While that file exists, the site loads the Vite dev server. Remove it, or stop the dev server, before treating the site as a production build. The production manifest lives at `web/app/themes/agency-starter/public/build/manifest.json`.

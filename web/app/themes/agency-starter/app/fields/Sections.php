@@ -212,9 +212,9 @@ class Sections
     {
         $layouts = [
             self::layout('layout_hk_hero', 'hero', __('Hero', 'sage'), [
-                Builder::text('field_hk_hero_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('Short line above the heading.', 'sage')),
-                Builder::text('field_hk_hero_heading', __('Heading', 'sage'), 'heading', __('On other pages, leave blank to use the page title. The large homepage title is the company name in Site Settings.', 'sage')),
-                Builder::textarea('field_hk_hero_text', __('Description', 'sage'), 'text', __('Plain text under the heading. On the homepage this is the paragraph under the photograph.', 'sage'), 3),
+                Builder::text('field_hk_hero_eyebrow', __('Eyebrow', 'sage'), 'eyebrow', __('Short line above the heading. On the Work page this is the small label under the title, such as All projects.', 'sage')),
+                Builder::text('field_hk_hero_heading', __('Heading', 'sage'), 'heading', __('On other pages, leave blank to use the page title. On the Work page this is the sentence under that label. The large title is the page title.', 'sage')),
+                Builder::textarea('field_hk_hero_text', __('Description', 'sage'), 'text', __('Plain text under the heading. On the homepage this is the paragraph under the photograph. On the Work page it sits beside the category filters.', 'sage'), 3),
                 Builder::image('field_hk_hero_image', __('Image', 'sage'), 'image', __('On the homepage this photograph sits in the right-hand frame. On other pages it fills the hero. Recommended 2000×2500 pixels, JPG or WebP.', 'sage')),
                 Builder::text('field_hk_hero_caption', __('Photograph caption', 'sage'), 'image_caption', __('Optional line under the homepage photograph. Leave blank to use the caption saved on the image in the Media Library.', 'sage')),
                 Builder::file('field_hk_hero_video', __('Background video', 'sage'), 'video', __('Optional. MP4 or WebM, muted behind the text. The image remains for visitors who prefer reduced motion.', 'sage')),

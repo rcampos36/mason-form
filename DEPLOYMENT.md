@@ -2,6 +2,18 @@
 
 Production installs WordPress, plugins, and the theme through Composer, then serves the Vite production build. Do not ship the Vite dev server.
 
+## Updating the live site
+
+From the project root, with Lando running for a content copy:
+
+```bash
+scripts/deploy.sh           # code: theme build, files, compiled templates
+scripts/deploy.sh content   # local images and database
+scripts/deploy.sh all       # code first, then content
+```
+
+`content` asks you to type `yes` because it replaces the live database. Add pages, posts, and images in the live admin when they should stay there. The server `.env` and uploaded images stay in place during a code copy. GitHub does not update the live site.
+
 ## Before the first production deploy
 
 1. Set `WP_ENV` to `production` in the server environment. `config/environments/development.php` is the only environment file that turns on `WP_DEBUG_DISPLAY`, `SAVEQUERIES`, and `SCRIPT_DEBUG`, and the only one that sets `DISALLOW_FILE_MODS` to false. Any other `WP_ENV` leaves debug display off and blocks plugin and theme installs from wp-admin.

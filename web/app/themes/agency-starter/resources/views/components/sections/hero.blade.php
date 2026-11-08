@@ -20,7 +20,9 @@
   $copy = $text !== '' ? $text : \App\Acf\Content::description('company_description', 'footer_description');
 @endphp
 
-@if (is_front_page() && $video === '')
+@if (is_page_template('template-work.blade.php') && $video === '')
+  @include('partials.work-hero')
+@elseif (is_front_page() && $video === '')
   <section class="home-hero">
     <h1 class="home-hero-name">
       <span class="home-hero-lead"><span class="home-hero-mask"><span class="home-hero-drop">{{ $name['lead'] }}</span></span></span>

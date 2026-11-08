@@ -461,6 +461,55 @@ class Content
     }
 
     /**
+     * Category filters for the work archive. All is the unfiltered page.
+     *
+     * @return list<array{name: string, url: string, current: bool}>
+     */
+    public static function projectFilters(): array
+    {
+        $current = self::requestedTerm('project_category');
+        $page = get_permalink() ?: home_url('/');
+        $filters = [[
+            'name' => __('All', 'sage'),
+            'url' => $page,
+            'current' => $current === '',
+        ]];
+
+        $terms = get_terms([
+            'taxonomy' => 'project_category',
+            'hide_empty' => true,
+        ]);
+
+        if (is_wp_error($terms) || ! is_array($terms)) {
+            return $filters;
+        }
+
+        $preferred = ['renovation', 'interiors', 'residential'];
+        usort($terms, function ($left, $right) use ($preferred) {
+            $leftPlace = array_search($left instanceof \WP_Term ? $left->slug : '', $preferred, true);
+            $rightPlace = array_search($right instanceof \WP_Term ? $right->slug : '', $preferred, true);
+            $leftPlace = $leftPlace === false ? count($preferred) : $leftPlace;
+            $rightPlace = $rightPlace === false ? count($preferred) : $rightPlace;
+
+            return $leftPlace <=> $rightPlace;
+        });
+
+        foreach ($terms as $term) {
+            if (! $term instanceof \WP_Term) {
+                continue;
+            }
+
+            $filters[] = [
+                'name' => $term->name,
+                'url' => add_query_arg('project_category', $term->slug, $page),
+                'current' => $current === $term->slug,
+            ];
+        }
+
+        return $filters;
+    }
+
+    /**
      * @return list<string>
      */
     public static function termNames(int $postId, string $taxonomy): array

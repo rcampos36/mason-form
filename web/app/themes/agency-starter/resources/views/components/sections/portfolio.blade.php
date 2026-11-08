@@ -87,9 +87,10 @@
       </ul>
     @endif
   </section>
-@elseif ($heading !== '' || $text !== '' || $projects)
+@elseif (is_page_template('template-work.blade.php') || $heading !== '' || $text !== '' || $projects)
   <x-section layout="wide" :tone="$section['section_background'] ?? null" :align="$align">
     <div class="grid gap-12">
+      @unless (is_page_template('template-work.blade.php'))
       <x-section-intro :heading="$heading" :text="$text" :align="$align" :number="$sectionNumber ?? ''" />
 
       @if (\App\Acf\Content::flag($section, 'show_filters'))
@@ -110,6 +111,7 @@
           </nav>
         @endif
       @endif
+      @endunless
 
       @if ($projects)
         <ul class="{{ \App\Design::classes('portfolio', $layout) }} list-none">
@@ -144,7 +146,13 @@
         </ul>
       @endif
 
-      <x-actions :links="$viewAll ? [$viewAll] : []" :align="$align" />
+      @unless (is_page_template('template-work.blade.php'))
+        <x-actions :links="$viewAll ? [$viewAll] : []" :align="$align" />
+      @else
+        @unless ($projects)
+          <p class="work-empty">{{ __('No projects in this category.', 'sage') }}</p>
+        @endunless
+      @endunless
     </div>
   </x-section>
 @endif

@@ -4,12 +4,14 @@
  * Advanced Custom Fields setup.
  *
  * Page sections are registered in app/fields/Sections.php.
+ * Require it by path so the class loads on a case-sensitive filesystem.
  * Field groups edited in WordPress are saved to acf-json.
  */
 
 namespace App;
 
 require_once __DIR__.'/fields/Builder.php';
+require_once __DIR__.'/fields/Sections.php';
 require_once __DIR__.'/fields/page.php';
 require_once __DIR__.'/fields/site-settings.php';
 require_once __DIR__.'/fields/entries.php';
