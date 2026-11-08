@@ -7,6 +7,11 @@
 namespace App;
 
 /**
+ * Keep the WordPress toolbar off the public site.
+ */
+add_filter('show_admin_bar', '__return_false');
+
+/**
  * Add "… Continued" to the excerpt.
  *
  * @return string
